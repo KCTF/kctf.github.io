@@ -81,3 +81,7 @@ deploy:
   type: git
   repository: git@github.com:KCTF/kctf.github.io.git
   branch: master
+feed:
+    type: atom
+    path: atom.xml
+    limit: 20
