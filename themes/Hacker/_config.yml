@@ -1,0 +1,23 @@
+menu:
+  Home: /
+  Archives: /archives
+  About: /about
+
+# gitment
+gitment: false
+gitment_owner:
+gitment_repo:
+gitment_client_id:
+gitment_client_secret:
+
+# valine comment
+valine: true
+leancloud_id: 86EMltAutxkr1IaqhOo0dP7l-gzGzoHsz 
+leancloud_key: kdJzexN5shKVeTpQx49IQDaH
+
+# disqus comment
+disqus: false
+disqus_shortname:
+
+# google analytics
+googleTrackId:
