@@ -3,5 +3,6 @@ title: {{ title }}
 date: {{ date }}
 tags:
 categories:
-author:
+author: kn0ck
+comment: true
 ---
