@@ -49,13 +49,24 @@ git clone -b dev https://github.com/KCTF/kctf.github.io.git
 ```
 git pull origin dev:dev
 ```
-3. 运行
+3. 添加文章
+
 ```
-hexo new "文章标题"
+hexo new "文章URL"
+
+# hexo new "first-post"
 ```
-4. 将原本写好的文章copy过来。
-5. 修改备注信息
-6. 部署文章
+打开 "项目目录/source/_post/文章URL.md"
+然后将原本写好的文章copy过来。
+
+修改备注信息
+![20190123154822206979746.png](https://img.5am3.com/20190123154822206979746.png)
+
+4. 部署文章
 ```
 hexo d -g
+```
+5. 更新dev分支
+```
+git push origin dev:dev
 ```
