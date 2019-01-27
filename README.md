@@ -69,5 +69,7 @@ hexo d -g
 ```
 5. 更新dev分支
 ```
+git add .
+git commit -m "xxx发表文章xxx"
 git push origin dev:dev
 ```
