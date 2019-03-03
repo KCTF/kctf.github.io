@@ -1,0 +1,275 @@
+<!DOCTYPE HTML>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+  <title>初探php拓展层面(一) | kn0ck&#39;s blog | 一群CTF爱好者</title>
+
+  
+  <meta name="author" content="kn0ck Team">
+  
+
+  
+  <meta name="description" content="kn0ck战队成立于2017年9月，是由一群来自全国各地的网络爱好者组成，战队成员因兴趣与热爱而聚集，以不服输的精神全力向着梦想进发。作为一支新兴CTF队伍，战队的宗旨是通过实际比赛将理论知识更好的发挥，以赛代练，锻炼和提升个人的技术水平，在比赛中广交朋友，共同进步。">
+  
+
+  
+  <meta name="keywords" content="CTF,kn0ck,网络安全,web,pwn,夺旗赛">
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <meta property="og:title" content="初探php拓展层面(一)">
+
+  <meta property="og:site_name" content="kn0ck&#39;s blog">
+
+  
+  <meta property="og:image" content="/favicon.ico">
+  
+
+  <link href="/favicon.ico" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="kn0ck&#39;s blog" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+</head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    <header>
+  <div class="site-branding">
+    <h1 class="site-title">
+      <a href="/">kn0ck&#39;s blog</a>
+    </h1>
+    <p class="site-description">一群CTF爱好者</p>
+  </div>
+  <nav class="site-navigation">
+    <ul>
+      
+        <li><a href="/">主页</a></li>
+      
+        <li><a href="/archives">归档</a></li>
+      
+        <li><a href="/about">关于</a></li>
+      
+    </ul>
+  </nav>
+</header>
+
+    <main class="site-main posts-loop">
+    <article>
+
+  
+    
+    <h3 class="article-title"><span>初探php拓展层面(一)</span></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2019/03/03/php-extension-1/" rel="bookmark">
+        <time class="entry-date published" datetime="2019-03-03T13:27:55.000Z">
+          2019-03-03
+        </time>
+      </a>
+    </span>
+    
+    <span class="posted-on">
+      <a href="/2019/03/03/php-extension-1/" rel="bookmark">
+        
+          p0desta
+        
+
+      </a>
+    </span>
+    
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <blockquote>
+<p>本文首发先知社区，文章链接：<a href="https://xz.aliyun.com/t/4214" target="_blank" rel="noopener">https://xz.aliyun.com/t/4214</a></p>
+</blockquote>
+<p>前段时间想写一个静态代码审计工具,需要对php扩展熟悉一些,那么自己从零开始接触这一块,如果有错误的地方,麻烦师傅们指正。</p>
+<p>另外呢网上虽然有一些文章,但是感觉都不是特别细,对于刚入门的我来说有些难以理解,因此详细的记录下自己的学习过程。</p>
+<a id="more"></a>
+<p>我在mac环境上折腾了两天gdb,还是没折腾好,无奈选择docker,这里推荐一个</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https://github.com/hxer/php-debug/blob/master/Dockerfile</span><br></pre></td></tr></table></figure>
+<p>这个dockerfile的vld和php版本不匹配,需要更换下低版本的vld。</p>
+<p>启动命令</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -i -d --security-opt seccomp=unconfined -v /Users/p0desta/Desktop/code:/home php5-debug</span><br></pre></td></tr></table></figure>
+<p><a name="ef5359c9"></a></p>
+<h4 id="编写最简单的php扩展"><a href="#编写最简单的php扩展" class="headerlink" title="编写最简单的php扩展"></a>编写最简单的php扩展</h4><ul>
+<li><p>在ext目录下执行命令</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./ext_skel --extname=p0desta</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>然后进入到扩展目录下,编辑config.m4文件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">16 dnl PHP_ARG_ENABLE(foobar, whether to enable foobar support,</span><br><span class="line">17 dnl Make sure that the comment is aligned:</span><br><span class="line">18 dnl [  --enable-foobar           Enable foobar support])</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><br>删除第16-18行的注释</p>
+<ul>
+<li><p>然后去php_p0desta.h文件,添加函数声明</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">PHP_FUNCTION(confirm_foobar_compiled);</span><br><span class="line">PHP_FUNCTION(p0desta);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>然后到p0desta.c中</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">const zend_function_entry p0desta_functions[] = &#123;</span><br><span class="line">	PHP_FE(p0desta, NULL)</span><br><span class="line">	PHP_FE(confirm_p0desta_compiled,	NULL)		/* For testing, remove later. */</span><br><span class="line">	PHP_FE_END	/* Must be the last line in p0desta_functions[] */</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><br>添加如下<code>PHP_FE(p0desta, NULL)</code></p>
+<ul>
+<li><p>然后到最底下编写函数</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">PHP_FUNCTION(p0desta)</span><br><span class="line">&#123;</span><br><span class="line">	php_printf(&quot;hello world&quot;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>然后在当前目录下执行命令</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">phpize</span><br><span class="line">./configure --enable-p0desta --enable-debug</span><br><span class="line">make</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>然后会在modules文件夹下生存<code>so</code>文件,在php.ini中添加拓展</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">extension=p0desta.so</span><br></pre></td></tr></table></figure>
+<p><img src="https://ws2.sinaimg.cn/large/006tKfTcly1g09d4l5yfuj30a0062t8y.jpg#align=left&amp;display=inline&amp;height=218&amp;originHeight=218&amp;originWidth=360&amp;status=done&amp;width=360" alt></p>
+<p>然后就可以调用自写的函数。</p>
+<p><a name="bbb46467"></a></p>
+<h4 id="php代码的大致执行流程"><a href="#php代码的大致执行流程" class="headerlink" title="php代码的大致执行流程"></a>php代码的大致执行流程</h4><p>开始 -&gt; Scanning,将php代码转换为语言片段(Tokens) -&gt; Parsing,将tokens转化为简单而有意义的表达式 -&gt; Compilation,将表达式编译成opcode -&gt; Execution,顺次执行opcodes,从而实现php脚本的功能。</p>
+<p><a name="b1f6dd04"></a></p>
+<h4 id="hook最简单的opcode"><a href="#hook最简单的opcode" class="headerlink" title="hook最简单的opcode"></a>hook最简单的opcode</h4><p>关于一些宏的解释参考:<code>https://github.com/pangudashu/php7-internal/blob/master/7/hook.md</code></p>
+<p>这里我使用<code>zend_set_user_opcode_handler</code>函数来hook <code>echo</code>函数</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">zend_set_user_opcode_handler(ZEND_ECHO, ppecho);</span><br></pre></td></tr></table></figure>
+<p>主要原理是将对应的Zend op的handler函数替换成我们自己定义的来实现HOOK</p>
+<p>首先我在扩展.h中定义如下</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> ZEND_OPCODE_HANDLER_ARGS void</span></span><br><span class="line">PHP_FUNCTION(confirm_foobar_compiled);</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">ppecho</span><span class="params">(ZEND_OPCODE_HANDLER_ARGS)</span></span>;</span><br></pre></td></tr></table></figure>
+<p>扩展.c中</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">PHP_MINIT_FUNCTION(p_echo)</span><br><span class="line">&#123;</span><br><span class="line">	/* If you have INI entries, uncomment these lines</span><br><span class="line">	REGISTER_INI_ENTRIES();</span><br><span class="line">	*/</span><br><span class="line">	zend_set_user_opcode_handler(ZEND_ECHO, ppecho);</span><br><span class="line">	return SUCCESS;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">int ppecho(ZEND_OPCODE_HANDLER_ARGS)</span><br><span class="line">&#123;</span><br><span class="line">	php_printf(&quot;hook success&quot;);</span><br><span class="line">	return ZEND_USER_OPCODE_RETURN;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>如果打算放行继续执行的话<code>return ZEND_USER_OPCODE_DISPATCH</code>,如果不继续执行的话<code>return ZEND_USER_OPCODE_RETURN</code></p>
+<p>编译完之后看一下效果</p>
+<p><img src="https://ws2.sinaimg.cn/large/006tKfTcly1g09ov5zdttj30em05kmxm.jpg#align=left&amp;display=inline&amp;height=200&amp;originHeight=200&amp;originWidth=526&amp;status=done&amp;width=526" alt></p>
+<p><a name="4b35f06d"></a></p>
+<h4 id="Webshell简单防御初探"><a href="#Webshell简单防御初探" class="headerlink" title="Webshell简单防御初探"></a>Webshell简单防御初探</h4><p>关于一些PHP内核中的定义详情请参考<code>https://www.kancloud.cn/kancloud/php-internals/42755</code></p>
+<p>这里我们暂时需要了解的有</p>
+<ul>
+<li><p>全局变量</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">EG()、这个宏可以用来访问符号表，函数，资源信息和常量</span><br><span class="line">CG() 用来访问核心全局变量</span><br><span class="line">PG() PHP全局变量。我们知道php.ini会映射一个或者多个PHP全局结构。举几个使用这个宏的例子：PG(register_globals), PG(safe_mode), PG(memory_limit)</span><br><span class="line">FG() 文件全局变量。大多数文件I/O或相关的全局变量的数据流都塞进标准扩展出口结构。</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>函数类型<br><br>Zend引擎将函数分为以下几个类型</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">#define ZEND_INTERNAL_FUNCTION 1</span><br><span class="line">#define ZEND_USER_FUNCTION 2 </span><br><span class="line">#define ZEND_OVERLOADED_FUNCTION 3</span><br><span class="line">#define ZEND_EVAL_CODE 4</span><br><span class="line">#define ZEND_OVERLOADED_FUNCTION_TEMPORARY 5</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>ZEND_USER_FUNCTION （用户函数:用户定义的函数）</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span> </span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">test</span><span class="params">()</span></span>&#123;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>ZEND_INTERNAL_FUNCTION (内部函数:由扩展、PHP内核、Zend引擎提供的内部函数)</p>
+</li>
+<li><p>变量函数</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$func = <span class="string">'print_r'</span>;</span><br><span class="line">$func(<span class="string">'i am print_r function.'</span>);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>匿名函数</p>
+</li>
+</ul>
+</li>
+<li>php7的_zend_execute_data<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> _<span class="title">zend_execute_data</span> &#123;</span></span><br><span class="line">	<span class="keyword">const</span> zend_op       *opline;           <span class="comment">/* executed opline                */</span></span><br><span class="line">	zend_execute_data   *call;             <span class="comment">/* current call                   */</span></span><br><span class="line">	zval                *return_value;</span><br><span class="line">	zend_function       *func;             <span class="comment">/* executed function              */</span></span><br><span class="line">	zval                 This;             <span class="comment">/* this + call_info + num_args    */</span></span><br><span class="line">	zend_execute_data   *prev_execute_data;</span><br><span class="line">	zend_array          *symbol_table;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">if</span> ZEND_EX_USE_RUN_TIME_CACHE</span></span><br><span class="line">	<span class="keyword">void</span>               **run_time_cache;   <span class="comment">/* cache op_array-&gt;run_time_cache */</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">if</span> ZEND_EX_USE_LITERALS</span></span><br><span class="line">	zval                *literals;         <span class="comment">/* cache op_array-&gt;literals       */</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>我们看一下如下代码的opcode</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="keyword">eval</span>(<span class="string">"system('whoami');"</span>);</span><br></pre></td></tr></table></figure>
+<p><img src="https://ws3.sinaimg.cn/large/006tKfTcly1g09pr975pmj31ci0s2gpv.jpg#align=left&amp;display=inline&amp;height=432&amp;originHeight=1010&amp;originWidth=1746&amp;status=done&amp;width=746" alt></p>
+<p>我们hook掉<code>INCLUDE_OR_EVAL</code></p>
+<p>修改<code>php_hook_eval.h</code>增加</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">PHP_FUNCTION(confirm_foobar_compiled);</span><br><span class="line">static int HOOK_INCLUDE_OR_EVAL(ZEND_OPCODE_HANDLER_ARGS);</span><br><span class="line"># define ZEND_OPCODE_HANDLER_ARGS zend_execute_data *execute_data</span><br></pre></td></tr></table></figure>
+<p>修改<code>hook_eval.c</code>增加</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">static int HOOK_INCLUDE_OR_EVAL(ZEND_OPCODE_HANDLER_ARGS)</span><br><span class="line">&#123;</span><br><span class="line">	zend_execute_data *tmp = &amp;execute_data;</span><br><span class="line">	zend_op *opline = execute_data-&gt;opline;</span><br><span class="line">	return ZEND_USER_OPCODE_DISPATCH;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>直接在<code>execute_data</code>中往下找调用的函数<code>system</code></p>
+<p><img src="https://ws3.sinaimg.cn/large/006tKfTcly1g0jpqxu5fgj32660fgdjz.jpg#align=left&amp;display=inline&amp;height=147&amp;originHeight=556&amp;originWidth=2814&amp;status=done&amp;width=746" alt></p>
+<p>这个也就是操作数</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">string型变量比较特殊，因为内核在保存String型变量时，不仅保存了字符串的值，还保存了它的长度，所以它有对应的两种宏组合STRVAL和STRLEN，即：Z_STRVAL、Z_STRVAL_P、Z_STRVAL_PP与Z_STRLEN、Z_STRLEN_P、Z_STRLEN_PP。</span><br></pre></td></tr></table></figure>
+<p>编写<code>HOOK_INCLUDE_OR_EVAL</code>如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">static int HOOK_INCLUDE_OR_EVAL(ZEND_OPCODE_HANDLER_ARGS)</span><br><span class="line">&#123;</span><br><span class="line">	zend_op *opline = execute_data-&gt;opline;</span><br><span class="line">	zval *operands = opline-&gt;op1.zv;</span><br><span class="line">	char *cmd = Z_STRVAL_P(operands);</span><br><span class="line">	if(cmd)&#123;</span><br><span class="line">			if((strstr(cmd, &quot;system&quot;)==NULL)&amp;&amp;(strstr(cmd, &quot;exec&quot;)==NULL)&amp;&amp;(strstr(cmd, &quot;shell_exec&quot;)==NULL)&amp;&amp;(strstr(cmd, &quot;passthru&quot;)==NULL)&amp;&amp;(strstr(cmd, &quot;roc_open&quot;)==NULL))&#123;</span><br><span class="line">				return ZEND_USER_OPCODE_DISPATCH;</span><br><span class="line">			&#125;else&#123;</span><br><span class="line">			 return ZEND_USER_OPCODE_RETURN;</span><br><span class="line">			&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	return ZEND_USER_OPCODE_DISPATCH; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>看下执行流程</p>
+<p><img src="https://ws2.sinaimg.cn/large/006tKfTcly1g0jtsrsagdj326g0dwwpa.jpg#align=left&amp;display=inline&amp;height=132&amp;originHeight=500&amp;originWidth=2824&amp;status=done&amp;width=746" alt></p>
+<p>当然,只hook掉<code>ZEND_INCLUDE_OR_EVAL</code>是很难防御的,比如说</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">eval(&apos;echo `whoami`;&apos;);</span><br></pre></td></tr></table></figure>
+<p>这种就必须再去hook <code>DO_FCALL</code></p>
+<p><img src="https://ws4.sinaimg.cn/large/006tKfTcly1g0jtv6jfryj31dr0u0tob.jpg#align=left&amp;display=inline&amp;height=450&amp;originHeight=1080&amp;originWidth=1791&amp;status=done&amp;width=746" alt></p>
+<p>为了不影响业务并且去做更好的防御,还需要更深入的研究。</p>
+<p>参考:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">http://drops.xmd5.com/static/drops/web-7333.html</span><br><span class="line">https://www.cnblogs.com/iamstudy/articles/php_code_rasp_1.html</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+      
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/web/">web</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/php拓展/">php拓展</a><a href="/tags/代码审计/">代码审计</a>
+    </span>
+    
+    
+
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+  
+	<section id="comment" class="comment">
+		<div id="vcomments"></div>
+	</section>
+	<!-- LeanCloud -->
+	<script src="//cdn.jsdelivr.net/npm/leancloud-storage@3.10.0/dist/av-min.js"></script>
+	<!-- Valine -->
+	<script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+	<script>
+		new Valine({
+			el: '#vcomments',
+			appId: '86EMltAutxkr1IaqhOo0dP7l-gzGzoHsz',
+			appKey: 'kdJzexN5shKVeTpQx49IQDaH'
+		})
+	</script>
+
+
+
+
+
+
+    </main>
+
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/CodeDaraW/Hacker" target="_blank">Hacker</a>
+    <br>
+    
+    &copy; 2019 kn0ck Team
+    
+  </p>
+</footer>
+    
+  </div>
+</div>
+</body>
+</html>
