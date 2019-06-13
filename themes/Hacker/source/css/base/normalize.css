@@ -422,3 +422,129 @@ td,
 th {
   padding: 0;
 }
+
+/**
+ * Players!
+ */
+
+.friend .friend-card-meta,
+.friend .friend-card-avatar {
+  border-top-left-radius: 25px;
+  border-top-right-radius: 25px;
+}
+.friend-card-container {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  margin: 10px 0;
+}
+.friend-card {
+  width: 135px;
+  background: white;
+  margin: 5px;
+  border-top-left-radius: 25px;
+  border-top-right-radius: 25px;
+  box-shadow: 0 0 5px #e0e0e0;
+  display: inline-block;
+}
+.friend-card-layer {
+  height: 135px;
+  
+  position: relative;
+  vertical-align: top;
+}
+.friend-card-layer:hover div {
+  height: 100%;
+}
+.friend-card-meta {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  z-index: 100;
+  width: 100%;
+  height: 0;
+  overflow: hidden;
+  background-color: rgba(0, 0, 0, 0.6);
+  transition: all 0.3s ease;
+}
+.friend-card-meta p {
+  margin: 0;
+  line-height: 1.5;
+  color: white;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  font-size: 0.9em;
+  transform: translate(-50%, -50%);
+}
+.friend-card .friend-card-layer img{
+  margin: 0;
+  height: 135px;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+}
+.friend-card-avatar {
+  width: 100%;
+  height: 250px;
+  object-fit: cover;
+}
+.friend-card-content {
+  padding: 5px;
+  word-break: break-all;
+}
+.friend-card-content-title {
+  font-weight: bold;
+  font-size: 15px;
+  line-height: 2;
+}
+.friend-card-content-site {
+  font-weight: normal;
+  color: #616161;
+  /* font-size: 10px; */
+  transition: all 0.15s;
+}
+.friend-card-content-site:hover {
+  color: #2196f3;
+}
+.friend article {
+  margin-bottom: 30px;
+}
+
+.testShowInfo {
+    position: relative;
+    font-weight: normal;
+    color: #616161;
+    transition: all 0.15s;
+    margin: 2px;
+}
+.testShowInfo:hover{
+  color: #2196f3;
+}
+.testShowInfo:hover::after {
+    content: attr(data-title);   
+    
+    border-radius: 5px;
+    position: absolute;
+    top: -30px;
+    left: -13px;
+    /* width: 25px; */
+
+    white-space : nowrap ;
+
+    font-size: .85714286rem;
+    display: inline-block;
+    line-height: 1;
+    vertical-align: baseline;
+    margin: 0 .14285714em;
+    background-color: #e8e8e8;
+    background-image: none;
+    padding: .5833em .833em;
+    color: rgba(0,0,0,.6);
+    text-transform: none;
+    font-weight: 700;
+    border: 0 solid transparent;
+    border-radius: .28571429rem;
+    transition: background .1s ease;
+
+
+}
