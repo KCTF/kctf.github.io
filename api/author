@@ -24,9 +24,10 @@
         },
         {
             "name":"raycp",
-            "avatar":"",
-            "solgn":"",
-            "blog":"https://ray-cp.github.io"
+            "avatar":"https://avatars1.githubusercontent.com/u/25220438?s=460&v=4",
+            "solgn":"DON'T STOP UNTIL YOU'RE PROUD",
+            "blog":"https://ray-cp.github.io",
+            "github":"https://github.com/ray-cp"
         },
         {
             "name":"Huasir",
@@ -42,21 +43,25 @@
         },
         {
             "name":"AltG",
-            "avatar":"",
+            "avatar":"https://avatars0.githubusercontent.com/u/31402858?s=460&v=4",
             "solgn":"→_→",
-            "blog":""
+            "blog":"",
+            "github":"https://github.com/xxy961216"
+
         },
         {
             "name":"yuhao",
             "avatar":"https://img.5am3.com/20190613156039196311128.jpg",
             "solgn":"海纳百川，有容乃大",
-            "blog":"http://0xyuhao.cn"
+            "blog":"http://0xyuhao.cn",
+            "github":"https://github.com/1yuhao"
         },
         {
             "name":"Hoshizora",
             "avatar":"https://img.5am3.com/20190613156039112258745.png",
             "solgn":"(=ﾟωﾟ)=",
-            "blog":""
+            "blog":"",
+            "github":"https://github.com/Hoshizora96"
         },
         {
             "name":"fangzhang",
@@ -96,21 +101,24 @@
             "avatar":"https://img.5am3.com/20190613156039110395446.png",
             "solgn":"菜鸡在路上",
             "blog":"bsauce.github.com",
-            "retire":"1"
+            "retire":"1",
+            "github":"https://github.com/bsauce"
         },
         {
             "name":"Occam_l",
             "avatar":"https://img.5am3.com/20190613156039106373072.png",
             "solgn":"All is well.",
             "blog":"",
-            "retire":"1"
+            "retire":"1",
+            "github":"https://github.com/luoyyqq"
         },
         {
             "name":"zblee",
-            "avatar":"",
+            "avatar":"https://avatars0.githubusercontent.com/u/9402843?s=460&v=4",
             "solgn":"",
             "blog":"",
-            "retire":"1"
+            "retire":"1",
+            "github":"https://github.com/zblee"
         },
         {
             "name":"ma_nu",
