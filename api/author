@@ -9,9 +9,10 @@
         },
         {
             "name":"p0desta",
-            "avatar":"",
-            "solgn":"",
-            "blog":"http://www.p0desta.com"
+            "avatar":"http://p0desta.com/img/avatar.jpg",
+            "solgn":"安全的路上越走越远。",
+            "blog":"http://www.p0desta.com",
+            "github":"https://github.com/p0desta"
         },
         {
             "name":"5am3",
@@ -74,6 +75,31 @@
             "avatar":"",
             "solgn":"",
             "blog":""
+        },
+        {
+            "name":"Sofr",
+            "avatar":"",
+            "solgn":"",
+            "blog":""
+        },
+        {
+            "name":"Sh@dow",
+            "avatar":"",
+            "solgn":"",
+            "blog":""
+        },
+        {
+            "name":"greydog",
+            "avatar":"https://thirdqq.qlogo.cn/g?b=oidb&k=mibiaspLAdicHAaDx0JMckQFA&s=0",
+            "solgn":"hello world!",
+            "blog":"greyd0g.github.io",
+            "github":"https://github.com/greyd0g"
+        },
+        {
+            "name":"Cyc1e",
+            "avatar":"http://uee.me/aWcfy",
+            "solgn":"",
+            "blog":"https://www.jianshu.com/u/9c3ca1ca4784"
         },
         {
             "name":"namespace",
