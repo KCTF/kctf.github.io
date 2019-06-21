@@ -96,10 +96,8 @@ function showUsers(UserList){
         
     }
     showText = text + retireText;
-    showText +='<style>.article-top-meta{display: none;}</style>';
-    showText +='<link rel="stylesheet" href="/font-awesome/css/font-awesome.min.css">';
 
-    document.getElementsByClassName("article-content")[0].innerHTML = showText;
+    document.getElementsByClassName("authorWapper")[0].innerHTML = showText;
 }
 
 (function() {
