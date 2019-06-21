@@ -16,7 +16,9 @@ function getAuthor(user){
     text += '    <img class="friend-card-avatar" src="'+avatar+'">';
     text += '</div>';
     text += '<div class="friend-card-content">';
-    text += '    <div class="friend-card-content-title">'+name+'</div>';
+    text += '    <div class="friend-card-content-title"';
+    if(user.fontSize) text += 'style="font-size:'+user.fontSize+'"';
+    text += '>'+name+'</div>';
 
 
     // id-card-o
