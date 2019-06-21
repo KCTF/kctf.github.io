@@ -438,10 +438,14 @@ th {
   flex-wrap: wrap;
   margin: 10px 0;
 }
+.authorWapper{
+  width: 820px;
+  margin: 0 auto;
+}
 .friend-card {
-  width: 135px;
+  width: 140px;
   background: white;
-  margin: 5px;
+  margin: 12px;
   border-top-left-radius: 25px;
   border-top-right-radius: 25px;
   box-shadow: 0 0 5px #e0e0e0;
