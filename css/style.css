@@ -457,8 +457,22 @@ th {
   position: relative;
   vertical-align: top;
 }
-.friend-card-layer:hover div {
+.friend-card-layer:hover .friend-card-meta {
   height: 100%;
+}
+.friend-card-skill{
+  background: #76140c;
+  position: absolute;
+  top:0;
+  right: 0;
+  height: 18px;
+  padding: 2px 4px;
+  font-weight: bold;
+  color: white;
+  border-bottom: 1px solid #fff;
+  border-left: 1px solid #fff;
+  border-radius:0 0 0 5px;
+  
 }
 .friend-card-meta {
   position: absolute;
@@ -472,14 +486,41 @@ th {
   transition: all 0.3s ease;
 }
 .friend-card-meta p {
-  margin: 0;
-  line-height: 1.5;
-  color: white;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  font-size: 0.9em;
-  transform: translate(-50%, -50%);
+    text-align:center;
+    margin: 0;
+    width:94%;
+    height:94%;
+    color: white;
+    font-size: 0.9em;
+    line-height: 1.5;
+    font-weight: bold;
+    padding: 3%;
+    word-break: break-all;
+
+    display: -webkit-box;
+    -webkit-box-orient: horizontal;
+    -webkit-box-pack: center;
+    -webkit-box-align: center;
+    
+    display: -moz-box;
+    -moz-box-orient: horizontal;
+    -moz-box-pack: center;
+    -moz-box-align: center;
+    
+    display: -o-box;
+    -o-box-orient: horizontal;
+    -o-box-pack: center;
+    -o-box-align: center;
+    
+    display: -ms-box;
+    -ms-box-orient: horizontal;
+    -ms-box-pack: center;
+    -ms-box-align: center;
+    
+    display: box;
+    box-orient: horizontal;
+    box-pack: center;
+    box-align: center;
 }
 .friend-card .friend-card-layer img{
   margin: 0;

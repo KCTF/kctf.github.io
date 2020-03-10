@@ -5,49 +5,62 @@
             "name":"matrix1001",
             "avatar":"",
             "solgn":"",
-            "blog":""
+            "blog":"",
+            "core":"1",
+            "skill": "Pwn"
         },
         {
             "name":"p0desta",
             "avatar":"http://p0desta.com/img/avatar.jpg",
             "solgn":"安全的路上越走越远。",
             "blog":"http://www.p0desta.com",
-            "github":"https://github.com/p0desta"
+            "github":"https://github.com/p0desta",
+            "core":"1",
+            "skill": "Web"
+
         },
         {
             "name":"5am3",
             "avatar":"https://img.5am3.com/20190613156039114555515.png",
-            "solgn":"菜死了",
-
+            "solgn":"自闭ing...",
+            "core":"1",
             "blog":"http://blog.5am3.com",
             "github":"https://github.com/5am3",
-            "weibo":"https://weibo.com/5am3"
+            "weibo":"https://weibo.com/5am3",
+            "skill": "Web"
         },
         {
             "name":"raycp",
             "avatar":"https://img.5am3.com/20190706156239781070196.png",
             "solgn":"DON'T STOP UNTIL YOU'RE PROUD",
             "blog":"https://ray-cp.github.io",
-            "github":"https://github.com/ray-cp"
+            "github":"https://github.com/ray-cp",
+            "core":"1",
+            "skill": "Pwn"
         },
         {
             "name":"Huasir",
             "avatar":"",
             "solgn":"",
-            "blog":""
+            "blog":"",
+            "core":"1",
+            "skill": "Web"
         },
         {
             "name":"Blue3rd",
             "avatar":"",
             "solgn":"",
-            "blog":""
+            "blog":"",
+            "skill": "Web"
+            
         },
         {
             "name":"AltG",
             "avatar":"https://img.5am3.com/2019070615623977675011.png",
             "solgn":"→_→",
             "blog":"",
-            "github":"https://github.com/xxy961216"
+            "github":"https://github.com/xxy961216",
+            "skill": "Web"
 
         },
         {
@@ -55,98 +68,118 @@
             "avatar":"https://img.5am3.com/20190613156039196311128.jpg",
             "solgn":"海纳百川，有容乃大",
             "blog":"http://0xyuhao.cn",
-            "github":"https://github.com/1yuhao"
+            "github":"https://github.com/1yuhao",
+            "skill": "Crypto"
         },
         {
             "name":"Hoshizora",
             "avatar":"https://img.5am3.com/20190613156039112258745.png",
             "solgn":"(=ﾟωﾟ)=",
             "blog":"",
-            "github":"https://github.com/Hoshizora96"
+            "github":"https://github.com/Hoshizora96",
+            "skill": "Re"
         },
         {
             "name":"fangzhang",
             "avatar":"",
             "solgn":"",
-            "blog":""
+            "blog":"",
+            "skill": "Web"
         },
         {
             "name":"bin",
-            "avatar":"",
+            "avatar":"http://img.5am3.com/5am3/img/20200310151901.png",
             "solgn":"",
-            "blog":""
+            "blog":"",
+            "core":"1",
+            "skill": "Re"
         },
         {
             "name":"Sofr",
             "avatar":"",
             "solgn":"",
-            "blog":""
+            "blog":"",
+            "skill": "Pwn"
         },
         {
             "name":"Sh@dow",
             "avatar":"",
             "solgn":"",
-            "blog":""
+            "blog":"",
+            "skill": "Web"
         },
         {
             "name":"greydog",
             "avatar":"https://thirdqq.qlogo.cn/g?b=oidb&k=mibiaspLAdicHAaDx0JMckQFA&s=0",
             "solgn":"hello world!",
             "blog":"greyd0g.github.io",
-            "github":"https://github.com/greyd0g"
+            "github":"https://github.com/greyd0g",
+            "skill": "Pwn"
         },
         {
             "name":"Cyc1e",
-            "avatar":"http://uee.me/aWcfy",
+            "avatar":"http://img.5am3.com/5am3/img/20200310151810.png",
             "solgn":"",
-            "blog":"https://www.jianshu.com/u/9c3ca1ca4784"
+            "blog":"https://www.jianshu.com/u/9c3ca1ca4784",
+            "core":"1",
+            "skill": "Web"
         },
         {
             "name":"Permission Denied",
             "avatar":"https://img.5am3.com/2019062115610948005702.png",
             "solgn":"",
             "fontSize":"10px",
-            "blog":"https://www.jianshu.com/u/f0f8a78193c9"
+            "blog":"https://www.jianshu.com/u/f0f8a78193c9",
+            "skill": "Pwn"
         },
         {
             "name":"Fish_o0O",
             "avatar":"https://img.5am3.com/20190621156109485371563.png",
             "solgn":"具有官方认证的菜鸡",
-            "blog":"https://www.jianshu.com/u/7343624d69c4"
+            "blog":"https://www.jianshu.com/u/7343624d69c4",
+            "skill": "Pwn"
         },
         {
             "name":"z3r0yu",
             "avatar":"https://img.5am3.com/20190706156239763393253.png",
             "solgn":"沈大佬nb",
             "blog":"https://zeroyu.xyz",
-            "github":"github.com/zer0yu"
+            "github":"github.com/zer0yu",
+            "core":"1",
+            "skill": "Web"
         },
         {
             "name":"flappy",
             "avatar":"",
             "solgn":"",
-            "blog":""
+            "blog":"",
+            "core":1,
+            "skill": "Re"
         },
         {
             "name":"namespace",
             "avatar":"",
             "solgn":"",
             "blog":"",
-            "retire":"1"
+            "retire":"1",
+            "skill": "Web"
         },
         {
             "name":"sora",
             "avatar":"",
             "solgn":"",
             "blog":"",
-            "retire":"1"
+            "retire":"1",
+            "core":"1",
+            "skill": "Web"
         },
         {
             "name":"meta2",
             "avatar":"",
             "solgn":"",
             "blog":"",
-            "retire":"1"
+            "retire":"1",
+            "skill": "Re"
         },
         {
             "name":"bsauce",
@@ -154,7 +187,9 @@
             "solgn":"菜鸡在路上",
             "blog":"bsauce.github.com",
             "retire":"1",
-            "github":"https://github.com/bsauce"
+            "github":"https://github.com/bsauce",
+            "core":"1",
+            "skill": "Pwn"
         },
         {
             "name":"Occam_l",
@@ -162,7 +197,8 @@
             "solgn":"All is well.",
             "blog":"",
             "retire":"1",
-            "github":"https://github.com/luoyyqq"
+            "github":"https://github.com/luoyyqq",
+            "skill": "MISC"
         },
         {
             "name":"zblee",
@@ -170,15 +206,60 @@
             "solgn":"",
             "blog":"",
             "retire":"1",
-            "github":"https://github.com/zblee"
+            "github":"https://github.com/zblee",
+            "skill": "Web"
         },
         {
             "name":"ma_nu",
             "avatar":"",
             "solgn":"Come and play with manu…",
             "blog":"https://cnblogs.com/manu18",
-            "retire":"1"
+            "retire":"1",
+            "core":"1",
+            "skill": "Crypto"
+        },
+        {
+            "name":"Skay",
+            "avatar":"http://img.5am3.com/5am3/img/20200310153001.png",
+            "solgn":"Winter is coming～",
+            "github":"https://github.com/0linlin0",
+            "skill": "Web"
+        },
+        {
+            "name":"LuckyCat",
+            "github":"https://github.com/LuckyC4t",
+            "blog":"https://www.jianshu.com/u/ad5c1e097b84",
+            "solgn":"Web🐕，汪汪汪",
+            "avatar": "http://img.5am3.com/5am3/img/20200310153636.png",
+            "skill": "Web"
+
+        },
+        {
+            "name": "panda",
+            "github": "https://github.com/cn-panda",
+            "blog": "www.cnpanda.net",
+            "solgn": "你要用较少的时间走完别人走了很久的路，所以你要跑起来，要飞快地跑起来。",
+            "solgnfontSize": "0.7em",
+            "avatar": "http://img.5am3.com/5am3/img/20200310160113.png",
+            "skill": "Web"
+        },
+        {
+            "name": "Qftm",
+            "github": "https://github.com/Qftm",
+            "blog": "https://www.cnblogs.com/qftm/",
+            "solgn": "Fight",
+            "avatar": "http://img.5am3.com/5am3/img/20200310160258.png",
+            "skill": "Web"
+        },
+        {
+            "name": "xiafeng",
+            "blog": "https://blog.xiafeng2333.top",
+            "solgn": "MISC签到组",
+            "avatar": "http://img.5am3.com/5am3/img/20200310160607.png",
+            "skill": "Misc"
+
         }
+
     ]
 
 }
