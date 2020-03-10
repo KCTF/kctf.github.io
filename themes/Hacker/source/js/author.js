@@ -10,8 +10,12 @@ function getAuthor(user){
 
     var text = '<div class="friend-card">';
     text += '<div class="friend-card-layer">';
+
+    if(user.skill) text += '<span class="friend-card-skill">'+user.skill+'</span>'
     text += '    <div class="friend-card-meta">';
-    text += '    <p>'+solgn+'.</p>';
+    text += '<p '
+    if(user.solgnfontSize)  text += 'style="font-size:'+user.solgnfontSize+';"';
+    text += '    >'+solgn+'.</p>';
     text += '    </div>';
     text += '    <img class="friend-card-avatar" src="'+avatar+'">';
     text += '</div>';
@@ -80,22 +84,22 @@ function getAuthor(user){
 
 function showUsers(UserList){
 
-    text = "";
-    retireText = "";
+    coreUserData = "<h3>核心队员</h3>";
+    userData = "";
 
-    retireText += "<br>";
-    retireText += "<br>";
-    retireText += "<h3>一路走来，感谢那些曾带我们飞的大佬。</h3>";
-    retireText += "<br>";
+    userData += "<br>";
+    userData += "<br>";
+    userData += "<h3>队员</h3>";
+    userData += "<br>";
     for(var i = 0;i<UserList.length;i++){
-        if(UserList[i].retire){
-            retireText += getAuthor(UserList[i]);
+        if(!UserList[i].core){
+            userData += getAuthor(UserList[i]);
         }else{
-            text += getAuthor(UserList[i]);
+            coreUserData += getAuthor(UserList[i]);
         }
         
     }
-    showText = text + retireText;
+    showText = coreUserData + userData;
 
     document.getElementsByClassName("authorWapper")[0].innerHTML = showText;
 }
